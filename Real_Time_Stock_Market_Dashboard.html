@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Stock Market Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .stock-card {
+            transition: all 0.3s ease;
+        }
+        .stock-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .positive {
+            color: #10b981;
+        }
+        .negative {
+            color: #ef4444;
+        }
+        .chart-container {
+            height: 400px;
+        }
+        .ticker-tape {
+            animation: ticker 30s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Stock Market Dashboard</h1>
+                    <p class="text-gray-600">Real-time financial data and analytics</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Last updated</p>
+                        <p id="update-time" class="font-medium">Loading...</p>
+                    </div>
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bd499c35-39d6-4d82-9b4d-5c5152f0f701.png" alt="Modern stock market logo with upward trending graph in blue and green colors" class="rounded-full" />
+                </div>
+            </div>
+        </header>
+
+        <!-- Market Overview -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Market Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-500">S&P 500</p>
+                    <p class="text-2xl font-bold">4,567.89</p>
+                    <p class="text-sm positive">+0.45%</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-500">NASDAQ</p>
+                    <p class="text-2xl font-bold">14,256.34</p>
+                    <p class="text-sm positive">+0.78%</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-500">DOW JONES</p>
+                    <p class="text-2xl font-bold">34,567.12</p>
+                    <p class="text-sm negative">-0.12%</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-500">VIX</p>
+                    <p class="text-2xl font-bold">15.67</p>
+                    <p class="text-sm negative">-2.34%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Stock Search and Add -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2 md:mb-0">Track Stocks</h2>
+                        <div class="flex space-x-2">
+                            <input type="text" id="stock-search" placeholder="Search stocks (e.g. AAPL)" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="add-stock" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Add</button>
+                        </div>
+                    </div>
+                    <div id="stock-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Stock cards will be added here -->
+                    </div>
+                </div>
+
+                <!-- Price Chart -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Price Chart</h2>
+                        <div class="flex space-x-2">
+                            <button class="time-btn px-3 py-1 bg-gray-100 rounded-lg" data-time="1d">1D</button>
+                            <button class="time-btn px-3 py-1 bg-gray-100 rounded-lg" data-time="1w">1W</button>
+                            <button class="time-btn px-3 py-1 bg-blue-100 text-blue-600 rounded-lg" data-time="1m">1M</button>
+                            <button class="time-btn px-3 py-1 bg-gray-100 rounded-lg" data-time="3m">3M</button>
+                            <button class="time-btn px-3 py-1 bg-gray-100 rounded-lg" data-time="1y">1Y</button>
+                        </div>
+                    </div>
+                    <div id="price-chart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-8">
+                <!-- Watchlist -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">My Watchlist</h2>
+                    <div id="watchlist" class="space-y-3">
+                        <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div>
+                                <p class="font-medium">AAPL</p>
+                                <p class="text-sm text-gray-500">Apple Inc.</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$178.72</p>
+                                <p class="text-sm positive">+1.23%</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div>
+                                <p class="font-medium">MSFT</p>
+                                <p class="text-sm text-gray-500">Microsoft Corp.</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$328.39</p>
+                                <p class="text-sm positive">+0.89%</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <div>
+                                <p class="font-medium">TSLA</p>
+                                <p class="text-sm text-gray-500">Tesla Inc.</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$245.12</p>
+                                <p class="text-sm negative">-2.34%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Market News</h2>
+                    <div class="space-y-4">
+                        <div class="flex space-x-3">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2f61ffc5-0365-4a15-b2eb-5f1482870a7f.png" alt="Business executive speaking at conference with stock market charts in background" class="rounded-lg w-20 h-15 object-cover" />
+                            <div>
+                                <h3 class="font-medium">Fed Signals Potential Rate Cuts in 2024</h3>
+                                <p class="text-sm text-gray-500">2 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/634f1f5b-aaaa-4c43-b20c-1886f2669ee4.png" alt="Tech company headquarters building with modern glass architecture" class="rounded-lg w-20 h-15 object-cover" />
+                            <div>
+                                <h3 class="font-medium">Tech Giants Report Strong Q4 Earnings</h3>
+                                <p class="text-sm text-gray-500">5 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f299b4f6-7cfc-4047-bcdf-d7cc560df658.png" alt="Oil refinery at sunset with industrial complex in background" class="rounded-lg w-20 h-15 object-cover" />
+                            <div>
+                                <h3 class="font-medium">Oil Prices Surge Amid Supply Concerns</h3>
+                                <p class="text-sm text-gray-500">Yesterday</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Indicators -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Technical Indicators</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">RSI (14)</p>
+                            <p class="text-xl font-bold">56.7</p>
+                            <p class="text-xs text-gray-500">Neutral</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">MACD</p>
+                            <p class="text-xl font-bold">1.23</p>
+                            <p class="text-xs text-gray-500">Bullish</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">SMA (50)</p>
+                            <p class="text-xl font-bold">$172.45</p>
+                            <p class="text-xs text-gray-500">Support</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Volume</p>
+                            <p class="text-xl font-bold">45.6M</p>
+                            <p class="text-xs text-gray-500">+12% avg</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ticker Tape -->
+        <div class="mt-8 bg-gray-800 text-white p-2 rounded-lg overflow-hidden">
+            <div class="ticker-tape whitespace-nowrap">
+                <span class="inline-block mr-8">AAPL $178.72 (+1.23%)</span>
+                <span class="inline-block mr-8">MSFT $328.39 (+0.89%)</span>
+                <span class="inline-block mr-8">GOOGL $142.56 (-0.45%)</span>
+                <span class="inline-block mr-8">AMZN $156.78 (+1.67%)</span>
+                <span class="inline-block mr-8">TSLA $245.12 (-2.34%)</span>
+                <span class="inline-block mr-8">NVDA $498.76 (+3.12%)</span>
+                <span class="inline-block mr-8">META $352.34 (+0.78%)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample stock data
+        const sampleStocks = [
+            { symbol: 'AAPL', name: 'Apple Inc.', price: 178.72, change: 1.23, changePercent: 1.23 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 328.39, change: 0.89, changePercent: 0.89 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 142.56, change: -0.45, changePercent: -0.45 },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 156.78, change: 1.67, changePercent: 1.67 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', price: 245.12, change: -2.34, changePercent: -2.34 },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 498.76, change: 3.12, changePercent: 3.12 },
+            { symbol: 'META', name: 'Meta Platforms', price: 352.34, change: 0.78, changePercent: 0.78 }
+        ];
+
+        // DOM elements
+        const stockSearch = document.getElementById('stock-search');
+        const addStockBtn = document.getElementById('add-stock');
+        const stockList = document.getElementById('stock-list');
+        const watchlist = document.getElementById('watchlist');
+        const updateTime = document.getElementById('update-time');
+        const timeButtons = document.querySelectorAll('.time-btn');
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            renderStockCards();
+            renderPriceChart('1m');
+            
+            // Set up event listeners
+            addStockBtn.addEventListener('click', addToWatchlist);
+            timeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    timeButtons.forEach(b => b.classList.remove('bg-blue-100', 'text-blue-600'));
+                    this.classList.add('bg-blue-100', 'text-blue-600');
+                    renderPriceChart(this.dataset.time);
+                });
+            });
+        });
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            updateTime.textContent = now.toLocaleString();
+            setTimeout(updateDateTime, 60000); // Update every minute
+        }
+
+        // Render stock cards
+        function renderStockCards() {
+            stockList.innerHTML = '';
+            sampleStocks.forEach(stock => {
+                const changeClass = stock.changePercent >= 0 ? 'positive' : 'negative';
+                const changeSymbol = stock.changePercent >= 0 ? '+' : '';
+                
+                const card = document.createElement('div');
+                card.className = 'stock-card bg-white p-4 rounded-lg shadow-sm border border-gray-100';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg">${stock.symbol}</h3>
+                        <span class="text-sm ${changeClass}">${changeSymbol}${stock.changePercent}%</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-1">${stock.name}</p>
+                    <p class="text-xl font-bold">$${stock.price.toFixed(2)}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-gray-500">Day Range: $${(stock.price - 2).toFixed(2)} - $${(stock.price + 3).toFixed(2)}</span>
+                        <button class="watchlist-btn text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded" data-symbol="${stock.symbol}">+ Watchlist</button>
+                    </div>
+                `;
+                stockList.appendChild(card);
+            });
+
+            // Add event listeners to watchlist buttons
+            document.querySelectorAll('.watchlist-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    addToWatchlist(this.dataset.symbol);
+                });
+            });
+        }
+
+        // Add stock to watchlist
+        function addToWatchlist(symbol) {
+            if (!symbol) {
+                symbol = stockSearch.value.trim().toUpperCase();
+                if (!symbol) return;
+            }
+            
+            const stock = sampleStocks.find(s => s.symbol === symbol);
+            if (!stock) {
+                alert('Stock not found');
+                return;
+            }
+
+            // Check if already in watchlist
+            if (document.querySelector(`#watchlist [data-symbol="${symbol}"]`)) {
+                alert('Stock already in watchlist');
+                return;
+            }
+
+            const changeClass = stock.changePercent >= 0 ? 'positive' : 'negative';
+            const changeSymbol = stock.changePercent >= 0 ? '+' : '';
+            
+            const item = document.createElement('div');
+            item.className = 'flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer';
+            item.dataset.symbol = symbol;
+            item.innerHTML = `
+                <div>
+                    <p class="font-medium">${stock.symbol}</p>
+                    <p class="text-sm text-gray-500">${stock.name}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-medium">$${stock.price.toFixed(2)}</p>
+                    <p class="text-sm ${changeClass}">${changeSymbol}${stock.changePercent}%</p>
+                </div>
+            `;
+            
+            // Add click event to show details
+            item.addEventListener('click', function() {
+                // In a real app, this would show detailed view
+                alert(`Showing details for ${stock.symbol}`);
+            });
+            
+            watchlist.appendChild(item);
+            stockSearch.value = '';
+        }
+
+        // Render price chart
+        function renderPriceChart(timeRange) {
+            // Sample data based on time range
+            let days, data;
+            switch(timeRange) {
+                case '1d':
+                    days = 1;
+                    data = generateIntradayData();
+                    break;
+                case '1w':
+                    days = 7;
+                    data = generateWeeklyData();
+                    break;
+                case '1m':
+                    days = 30;
+                    data = generateMonthlyData();
+                    break;
+                case '3m':
+                    days = 90;
+                    data = generateQuarterlyData();
+                    break;
+                case '1y':
+                    days = 365;
+                    data = generateYearlyData();
+                    break;
+                default:
+                    days = 30;
+                    data = generateMonthlyData();
+            }
+
+            const layout = {
+                title: `Price Chart (${timeRange.toUpperCase()})`,
+                xaxis: {
+                    title: 'Time'
+                },
+                yaxis: {
+                    title: 'Price ($)'
+                },
+                margin: { t: 30, b: 40, l: 50, r: 30 },
+                showlegend: false,
+                hovermode: 'closest'
+            };
+
+            Plotly.newPlot('price-chart', [{
+                x: data.dates,
+                y: data.prices,
+                type: 'line',
+                line: { color: '#3b82f6', width: 2 },
+                hoverinfo: 'y'
+            }], layout);
+        }
+
+        // Data generation functions
+        function generateIntradayData() {
+            const dates = [];
+            const prices = [];
+            const basePrice = 175 + Math.random() * 10;
+            
+            for (let i = 0; i < 390; i++) { // 6.5 hours * 60 minutes
+                const time = new Date();
+                time.setHours(9, 30 + i, 0, 0);
+                dates.push(time);
+                
+                // Simulate market movement
+                const minuteChange = (Math.random() - 0.5) * 0.2;
+                const lastPrice = prices.length ? prices[prices.length - 1] : basePrice;
+                prices.push(lastPrice + minuteChange);
+            }
+            
+            return { dates, prices };
+        }
+
+        function generateWeeklyData() {
+            const dates = [];
+            const prices = [];
+            const basePrice = 170 + Math.random() * 20;
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - (6 - i));
+                dates.push(date);
+                
+                // Simulate daily movement
+                const dayChange = (Math.random() - 0.4) * 3;
+                const lastPrice = prices.length ? prices[prices.length - 1] : basePrice;
+                prices.push(lastPrice + dayChange);
+            }
+            
+            return { dates, prices };
+        }
+
+        function generateMonthlyData() {
+            const dates = [];
+            const prices = [];
+            const basePrice = 160 + Math.random() * 30;
+            
+            for (let i = 0; i < 30; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - (29 - i));
+                dates.push(date);
+                
+                // Simulate daily movement
+                const dayChange = (Math.random() - 0.4) * 2;
+                const lastPrice = prices.length ? prices[prices.length - 1] : basePrice;
+                prices.push(lastPrice + dayChange);
+            }
+            
+            return { dates, prices };
+        }
+
+        function generateQuarterlyData() {
+            const dates = [];
+            const prices = [];
+            const basePrice = 150 + Math.random() * 40;
+            
+            for (let i = 0; i < 90; i += 3) { // Every 3 days
+                const date = new Date();
+                date.setDate(date.getDate() - (89 - i));
+                dates.push(date);
+                
+                // Simulate movement
+                const change = (Math.random() - 0.3) * 4;
+                const lastPrice = prices.length ? prices[prices.length - 1] : basePrice;
+                prices.push(lastPrice + change);
+            }
+            
+            return { dates, prices };
+        }
+
+        function generateYearlyData() {
+            const dates = [];
+            const prices = [];
+            const basePrice = 140 + Math.random() * 50;
+            
+            for (let i = 0; i < 12; i++) { // Monthly data
+                const date = new Date();
+                date.setMonth(date.getMonth() - (11 - i));
+                dates.push(date);
+                
+                // Simulate monthly movement
+                const monthChange = (Math.random() - 0.2) * 10;
+                const lastPrice = prices.length ? prices[prices.length - 1] : basePrice;
+                prices.push(lastPrice + monthChange);
+            }
+            
+            return { dates, prices };
+        }
+    </script>
+</body>
+</html>
+
