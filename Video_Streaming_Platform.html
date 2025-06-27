@@ -1,0 +1,549 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVista - Video Streaming Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .video-card:hover .overlay {
+            opacity: 1;
+        }
+        .dropzone {
+            border: 2px dashed #4b5563;
+            transition: all 0.3s ease;
+        }
+        .dropzone.active {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        #videoPlayer {
+            max-height: 70vh;
+        }
+        @media (max-width: 768px) {
+            #videoPlayer {
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7655a642-61ca-4a1e-93e1-57906bf6b957.png" alt="StreamVista logo - a purple play button inside a circular frame" class="rounded-full">
+                <h1 class="text-xl font-bold">StreamVista</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#dashboard" class="hover:text-indigo-200">Dashboard</a>
+                <a href="#library" class="hover:text-indigo-200">Library</a>
+                <a href="#upload" class="hover:text-indigo-200">Upload</a>
+                <a href="#settings" class="hover:text-indigo-200">Settings</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="bg-indigo-700 hover:bg-indigo-600 px-4 py-1 rounded-full flex items-center">
+                    <i class="fas fa-plus mr-1"></i> Upload
+                </button>
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/00b7b822-ceaf-4784-8436-38c733b09884.png" alt="User profile picture - professional headshot of a smiling middle-aged man with glasses" class="rounded-full">
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="md:hidden bg-indigo-800 text-white p-2">
+        <div class="flex justify-around">
+            <a href="#dashboard" class="p-2"><i class="fas fa-home"></i></a>
+            <a href="#library" class="p-2"><i class="fas fa-photo-video"></i></a>
+            <a href="#upload" class="p-2"><i class="fas fa-upload"></i></a>
+            <a href="#settings" class="p-2"><i class="fas fa-cog"></i></a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Dashboard</h2>
+                <div class="flex space-x-2">
+                    <button class="bg-indigo-100 hover:bg-indigo-200 px-3 py-1 rounded">This Week</button>
+                    <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">This Month</button>
+                    <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">All Time</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold">Total Videos</h3>
+                        <i class="fas fa-photo-video text-indigo-500 text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold mt-2">142</p>
+                    <p class="text-green-500 text-sm mt-1">+12 this month</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold">Total Views</h3>
+                        <i class="fas fa-eye text-indigo-500 text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold mt-2">8,542</p>
+                    <p class="text-green-500 text-sm mt-1">+1,284 this month</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold">Storage Used</h3>
+                        <i class="fas fa-database text-indigo-500 text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold mt-2">286 GB</p>
+                    <p class="text-red-500 text-sm mt-1">78% of limit</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start pb-4 border-b border-gray-100">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/74b80ce9-4a91-4ea3-989c-73abde974e62.png" alt="Video thumbnail of a cooking tutorial showing ingredients on a kitchen counter" class="rounded mr-3">
+                        <div>
+                            <h4 class="font-medium">New video uploaded: "Mastering Italian Pasta"</h4>
+                            <p class="text-sm text-gray-500">2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start pb-4 border-b border-gray-100">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/007f3b4a-d540-4dea-a617-64a1a746d4fb.png" alt="Video thumbnail of a tech review showing a smartphone on a table" class="rounded mr-3">
+                        <div>
+                            <h4 class="font-medium">Video processed: "iPhone 15 Pro Review"</h4>
+                            <p class="text-sm text-gray-500">1 day ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b86fac54-a94c-462d-9461-21832e1d29c1.png" alt="Video thumbnail of a workout tutorial showing a person doing squats" class="rounded mr-3">
+                        <div>
+                            <h4 class="font-medium">New comment on "30-Day Fitness Challenge"</h4>
+                            <p class="text-sm text-gray-500">3 days ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Library Section -->
+        <section id="library" class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Video Library</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" placeholder="Search videos..." class="pl-8 pr-4 py-1 border rounded-full">
+                        <i class="fas fa-search absolute left-3 top-2 text-gray-400"></i>
+                    </div>
+                    <button class="bg-gray-200 hover:bg-gray-300 p-2 rounded">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Video Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c00d8aa5-1837-4f6b-8872-1e0e188ba553.png" alt="Video thumbnail showing a sunset landscape with mountains in the background" class="w-full h-48 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 overlay opacity-0 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-indigo-600 rounded-full h-12 w-12 flex items-center justify-center hover:scale-110 transform transition">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">Sunset Adventures</h3>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>1.2K views</span>
+                            <span>15:22</span>
+                        </div>
+                        <div class="mt-2 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/05ec141f-830e-4b52-a524-f37c30d173ef.png" alt="Small user avatar showing a hiker with sunglasses" class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-xs">AdventureCo</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-indigo-500">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/004019c8-310c-476b-89f8-33a4a99ff6a8.png" alt="Video thumbnail showing a chef preparing sushi in a restaurant kitchen" class="w-full h-48 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 overlay opacity-0 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-indigo-600 rounded-full h-12 w-12 flex items-center justify-center hover:scale-110 transform transition">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">Sushi Masterclass</h3>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>4.7K views</span>
+                            <span>32:15</span>
+                        </div>
+                        <div class="mt-2 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/344f4de3-009b-49e4-a28e-c02df059fcd4.png" alt="Small user avatar of a professional chef in a white hat" class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-xs">ChefTaku</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-indigo-500">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/acf86129-f188-4c2b-aa84-66f2898fa347.png" alt="Video thumbnail showing a coding tutorial screen with JavaScript code in an editor" class="w-full h-48 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 overlay opacity-0 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-indigo-600 rounded-full h-12 w-12 flex items-center justify-center hover:scale-110 transform transition">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">Advanced React Patterns</h3>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>9.5K views</span>
+                            <span>48:07</span>
+                        </div>
+                        <div class="mt-2 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/82be62c2-5a1e-4ee1-ab6b-9cb1befa65e6.png" alt="Small user avatar of a developer wearing headphones" class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-xs">CodeMaster</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-indigo-500">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 4 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/189913fd-c032-4afa-95a5-67bf164eeb8c.png" alt="Video thumbnail showing workout equipment in a modern gym with natural lighting" class="w-full h-48 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 overlay opacity-0 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-indigo-600 rounded-full h-12 w-12 flex items-center justify-center hover:scale-110 transform transition">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">Total Body HIIT Workout</h3>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>6.3K views</span>
+                            <span>28:45</span>
+                        </div>
+                        <div class="mt-2 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4e535708-11a5-4425-b3ee-27b2543b1e49.png" alt="Small user avatar of a fitness instructor in workout clothes" class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-xs">FitLife</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-indigo-500">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full">
+                    Load More Videos
+                </button>
+            </div>
+        </section>
+
+        <!-- Video Player Modal -->
+        <div id="videoModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4">
+            <div class="relative w-full max-w-4xl">
+                <button id="closeModal" class="absolute -top-10 right-0 text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="bg-black rounded-lg overflow-hidden">
+                    <video id="videoPlayer" controls class="w-full">
+                        <source src="https://storage.example.com/videos/sample.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="mt-4 bg-white p-4 rounded-b-lg">
+                    <h2 class="text-xl font-bold">Sample Video Title</h2>
+                    <div class="flex justify-between items-center mt-2">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6863b486-5670-44da-a91b-98d4b89db388.png" alt="Channel logo showing a camera icon on a blue background" class="w-10 h-10 rounded-full mr-2">
+                                <div>
+                                    <p class="font-medium">Channel Name</p>
+                                    <p class="text-sm text-gray-500">42K subscribers</p>
+                                </div>
+                            </div>
+                            <button class="bg-gray-200 hover:bg-gray-300 px-4 py-1 rounded-full font-medium">
+                                Subscribe
+                            </button>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex items-center space-x-1 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span>2.4K</span>
+                            </button>
+                            <button class="flex items-center space-x-1 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full">
+                                <i class="fas fa-thumbs-down"></i>
+                                <span>42</span>
+                            </button>
+                            <button class="flex items-center space-x-1 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full">
+                                <i class="fas fa-share"></i>
+                                <span>Share</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-gray-100 p-3 rounded-lg">
+                        <div class="flex justify-between">
+                            <div>
+                                <span class="font-medium">245,324 views</span>
+                                <span class="mx-2">•</span>
+                                <span>2 weeks ago</span>
+                            </div>
+                            <button class="text-indigo-600 font-medium">
+                                Show more
+                            </button>
+                        </div>
+                        <p class="mt-2">This is a sample video description. It might contain details about the video content, timestamps for different sections, links to related resources, or other relevant information.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <section id="upload" class="mb-12 pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-bold mb-6">Upload Video</h2>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div id="dropzone" class="dropzone rounded-lg p-8 text-center cursor-pointer">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-indigo-500 mb-3"></i>
+                    <h3 class="text-xl font-semibold mb-1">Drag and drop video files here</h3>
+                    <p class="text-gray-500 mb-4">Or browse files from your device</p>
+                    <input type="file" id="fileInput" accept="video/*" class="hidden">
+                    <button id="browseBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full">
+                        Select Files
+                    </button>
+                    <p class="text-xs text-gray-400 mt-4">MP4, MOV, AVI up to 1080p, 2GB</p>
+                </div>
+
+                <div id="uploadDetails" class="mt-8 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div>
+                            <label for="videoTitle" class="block text-sm font-medium mb-1">Title</label>
+                            <input type="text" id="videoTitle" class="w-full px-3 py-2 border rounded">
+                        </div>
+                        <div>
+                            <label for="videoCategory" class="block text-sm font-medium mb-1">Category</label>
+                            <select id="videoCategory" class="w-full px-3 py-2 border rounded">
+                                <option value="">Select category</option>
+                                <option>Education</option>
+                                <option>Entertainment</option>
+                                <option>Gaming</option>
+                                <option>Music</option>
+                                <option>Technology</option>
+                                <option>Sports</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="videoVisibility" class="block text-sm font-medium mb-1">Visibility</label>
+                            <select id="videoVisibility" class="w-full px-3 py-2 border rounded">
+                                <option value="public">Public</option>
+                                <option value="unlisted">Unlisted</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="videoDescription" class="block text-sm font-medium mb-1">Description</label>
+                        <textarea id="videoDescription" rows="4" class="w-full px-3 py-2 border rounded"></textarea>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="videoThumbnail" class="block text-sm font-medium mb-1">Thumbnail</label>
+                        <div class="flex items-center space-x-4">
+                            <img id="thumbnailPreview" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4fd6518c-1228-4143-b6b6-90a778838ea8.png" alt="Preview of video thumbnail showing placeholder text" class="w-40 h-auto rounded border">
+                            <div>
+                                <input type="file" id="videoThumbnail" accept="image/*" class="hidden">
+                                <button id="thumbnailBtn" class="bg-gray-200 hover:bg-gray-300 px-4 py-1 rounded">
+                                    Upload Thumbnail
+                                </button>
+                                <p class="text-xs text-gray-500 mt-1">JPEG or PNG, 16:9 ratio</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded mr-3">
+                            Save as Draft
+                        </button>
+                        <button id="uploadBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded">
+                            Publish Video
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-semibold mb-4">StreamVista</h3>
+                    <p class="text-sm">The premium video hosting and streaming platform for creators.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Features</a></li>
+                        <li><a href="#" class="hover:text-white">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white">API</a></li>
+                        <li><a href="#" class="hover:text-white">Integration</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Community</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm">© 2023 StreamVista. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Video Player Modal
+        const videoModal = document.getElementById('videoModal');
+        const closeModal = document.getElementById('closeModal');
+        const videoCards = document.querySelectorAll('.video-card');
+        
+        // Open modal when video card is clicked
+        videoCards.forEach(card => {
+            card.addEventListener('click', () => {
+                videoModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            videoModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // File upload functionality
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const uploadDetails = document.getElementById('uploadDetails');
+        
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropzone.classList.add('active');
+        }
+        
+        function unhighlight() {
+            dropzone.classList.remove('active');
+        }
+        
+        dropzone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+        
+        browseBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+        
+        function handleFiles(files) {
+            if (files.length > 0) {
+                // Show upload details form
+                uploadDetails.classList.remove('hidden');
+                
+                // Update thumbnail preview if thumbnail file is selected
+                const thumbnailInput = document.getElementById('videoThumbnail');
+                thumbnailInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            document.getElementById('thumbnailPreview').src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        }
+        
+        // Simulate upload progress for demo purposes
+        document.getElementById('uploadBtn').addEventListener('click', () => {
+            alert('Video upload would begin here with backend integration');
+            // In a real application, this would use XMLHttpRequest or fetch API
+            // to upload the file to the backend with progress events
+        });
+    </script>
+</body>
+</html>
+
